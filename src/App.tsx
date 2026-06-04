@@ -16,6 +16,7 @@ import { AdminOverview } from '@/pages/admin/AdminOverview'
 import { AdminCourses } from '@/pages/admin/AdminCourses'
 import { AdminTeeTimes } from '@/pages/admin/AdminTeeTimes'
 import { AdminBookings } from '@/pages/admin/AdminBookings'
+import { AdminProfile } from '@/pages/admin/AdminProfile'
 
 export default function App() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="courses" element={<AdminCourses />} />
             <Route path="tee-times" element={<AdminTeeTimes />} />
             <Route path="bookings" element={<AdminBookings />} />
+            <Route path="profile" element={<AdminProfile />} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />
