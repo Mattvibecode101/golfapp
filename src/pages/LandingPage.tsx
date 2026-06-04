@@ -5,11 +5,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { CourseGrid } from '@/components/courses/CourseGrid'
 import { useCourses } from '@/hooks/useCourses'
+import { useSiteSettings } from '@/hooks/useSiteSettings'
 
 export function LandingPage() {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const { courses, loading } = useCourses()
+  const { settings } = useSiteSettings()
 
   const featured = courses.slice(0, 3)
 
@@ -20,21 +22,33 @@ export function LandingPage() {
     navigate(`/courses?${params.toString()}`)
   }
 
+  const heroStyle = {
+    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('${settings.hero_image_url}')`,
+    backgroundSize: 'cover' as const,
+    backgroundPosition: 'center' as const,
+  }
+
+  const bottomStyle = settings.bottom_bg_image_url
+    ? {
+        backgroundImage: `url('${settings.bottom_bg_image_url}')`,
+        backgroundSize: 'cover' as const,
+        backgroundPosition: 'center' as const,
+      }
+    : { backgroundColor: settings.bottom_bg_color }
+
   return (
     <div>
       {/* Hero */}
       <section
-        className="relative min-h-[520px] flex items-center justify-center bg-cover bg-center"
-        style={{
-          backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=1600&auto=format&fit=crop')`,
-        }}
+        className="relative min-h-[520px] flex items-center justify-center"
+        style={heroStyle}
       >
         <div className="relative z-10 text-center text-white px-4 max-w-2xl mx-auto space-y-6">
           <h1 className="text-4xl md:text-5xl font-bold leading-tight">
-            Book Your Perfect<br />Round of Golf
+            {settings.hero_title}
           </h1>
           <p className="text-lg text-white/80">
-            Search tee times at top South African courses — instantly confirm your round online.
+            {settings.hero_subtitle}
           </p>
           <form onSubmit={handleSearch} className="flex gap-2 max-w-lg mx-auto">
             <div className="relative flex-1">
@@ -77,8 +91,8 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Featured Courses */}
-      <section className="py-16">
+      {/* Featured Courses — background controlled from admin */}
+      <section className="py-16" style={bottomStyle}>
         <div className="container space-y-8">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold">Top Rated Courses</h2>

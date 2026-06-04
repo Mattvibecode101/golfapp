@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { LayoutDashboard, MapPin, Clock, CalendarCheck, Shield, UserCog } from 'lucide-react'
+import { LayoutDashboard, MapPin, Clock, CalendarCheck, Shield, UserCog, Palette } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const nav = [
@@ -7,6 +7,7 @@ const nav = [
   { to: '/admin/courses', label: 'Courses', icon: MapPin, end: false },
   { to: '/admin/tee-times', label: 'Tee Times', icon: Clock, end: false },
   { to: '/admin/bookings', label: 'Bookings', icon: CalendarCheck, end: false },
+  { to: '/admin/settings', label: 'Site Design', icon: Palette, end: false },
   { to: '/admin/profile', label: 'My Profile', icon: UserCog, end: false },
 ]
 
