@@ -18,6 +18,12 @@ import { AdminTeeTimes } from '@/pages/admin/AdminTeeTimes'
 import { AdminBookings } from '@/pages/admin/AdminBookings'
 import { AdminProfile } from '@/pages/admin/AdminProfile'
 import { AdminSettings } from '@/pages/admin/AdminSettings'
+import { ClubGuard } from '@/components/club/ClubGuard'
+import { ClubLayout } from '@/pages/club/ClubLayout'
+import { ClubOverview } from '@/pages/club/ClubOverview'
+import { ClubTeeTimes } from '@/pages/club/ClubTeeTimes'
+import { ClubBookings } from '@/pages/club/ClubBookings'
+import { ClubProfile } from '@/pages/club/ClubProfile'
 
 export default function App() {
   return (
@@ -42,6 +48,14 @@ export default function App() {
             <Route path="bookings" element={<AdminBookings />} />
             <Route path="settings" element={<AdminSettings />} />
             <Route path="profile" element={<AdminProfile />} />
+          </Route>
+
+          {/* Club manager portal */}
+          <Route path="/club" element={<ClubGuard><ClubLayout /></ClubGuard>}>
+            <Route index element={<ClubOverview />} />
+            <Route path="tee-times" element={<ClubTeeTimes />} />
+            <Route path="bookings" element={<ClubBookings />} />
+            <Route path="profile" element={<ClubProfile />} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

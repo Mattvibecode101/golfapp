@@ -145,6 +145,8 @@ export type Database = {
           full_name: string | null
           id: string
           is_admin: boolean
+          is_club_manager: boolean
+          managed_course_id: string | null
           phone: string | null
           updated_at: string
         }
@@ -155,6 +157,8 @@ export type Database = {
           full_name?: string | null
           id: string
           is_admin?: boolean
+          is_club_manager?: boolean
+          managed_course_id?: string | null
           phone?: string | null
           updated_at?: string
         }
@@ -165,6 +169,8 @@ export type Database = {
           full_name?: string | null
           id?: string
           is_admin?: boolean
+          is_club_manager?: boolean
+          managed_course_id?: string | null
           phone?: string | null
           updated_at?: string
         }

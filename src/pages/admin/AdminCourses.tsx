@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Upload, Star } from 'lucide-react'
+import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Upload, Star, UserPlus } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 import { ImageUpload } from '@/components/admin/ImageUpload'
@@ -31,6 +31,10 @@ export function AdminCourses() {
   const [csvText, setCsvText] = useState('')
   const [importing, setImporting] = useState(false)
   const [search, setSearch] = useState('')
+  const [assignOpen, setAssignOpen] = useState(false)
+  const [assignCourse, setAssignCourse] = useState<GolfCourse | null>(null)
+  const [assignEmail, setAssignEmail] = useState('')
+  const [assigning, setAssigning] = useState(false)
 
   const fetchCourses = () => {
     setLoading(true)
@@ -87,6 +91,32 @@ export function AdminCourses() {
     if (error) { toast.error(error.message); return }
     setCourses(prev => prev.filter(x => x.id !== c.id))
     toast.success('Course deleted')
+  }
+
+  const openAssign = (c: GolfCourse) => { setAssignCourse(c); setAssignEmail(''); setAssignOpen(true) }
+
+  const handleAssign = async () => {
+    if (!assignCourse || !assignEmail.trim()) { toast.error('Enter an email address'); return }
+    setAssigning(true)
+    // Look up the user by email in profiles
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, email, full_name')
+      .eq('email', assignEmail.trim().toLowerCase())
+      .single()
+    if (profileError || !profile) {
+      toast.error('No account found for that email. They must sign up first.')
+      setAssigning(false)
+      return
+    }
+    const { error } = await supabase
+      .from('profiles')
+      .update({ is_club_manager: true, managed_course_id: assignCourse.id })
+      .eq('id', profile.id)
+    setAssigning(false)
+    if (error) { toast.error(error.message); return }
+    toast.success(`${profile.full_name ?? assignEmail} is now the manager of ${assignCourse.name}`)
+    setAssignOpen(false)
   }
 
   const handleImport = async () => {
@@ -196,6 +226,9 @@ export function AdminCourses() {
                   </td>
                   <td className="px-4 py-2">
                     <div className="flex items-center gap-0.5 justify-end">
+                      <Button size="icon" variant="ghost" className="h-7 w-7" title="Assign manager" onClick={() => openAssign(c)}>
+                        <UserPlus className="h-3.5 w-3.5 text-muted-foreground" />
+                      </Button>
                       <Button size="icon" variant="ghost" className="h-7 w-7" title={c.is_active ? 'Hide' : 'Show'} onClick={() => toggleActive(c)}>
                         {c.is_active ? <ToggleRight className="h-4 w-4 text-green-600" /> : <ToggleLeft className="h-4 w-4 text-muted-foreground" />}
                       </Button>
@@ -389,6 +422,39 @@ export function AdminCourses() {
             <Button variant="outline" onClick={() => setOpen(false)} disabled={saving}>Cancel</Button>
             <Button onClick={handleSave} disabled={saving} className="min-w-24">
               {saving ? 'Saving...' : editing.id ? 'Save Changes' : 'Create Course'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── Assign Manager dialog ── */}
+      <Dialog open={assignOpen} onOpenChange={setAssignOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Assign Club Manager</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <p className="text-sm text-muted-foreground">
+              Assigning a manager for <strong>{assignCourse?.name}</strong>. They must have an existing account on the platform.
+            </p>
+            <div className="space-y-1.5">
+              <Label>Manager's Email Address</Label>
+              <Input
+                type="email"
+                placeholder="clubmanager@example.com"
+                value={assignEmail}
+                onChange={e => setAssignEmail(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              They'll get access to the Club Portal at <code className="bg-muted px-1 rounded">/club</code> after their next login.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAssignOpen(false)}>Cancel</Button>
+            <Button onClick={handleAssign} disabled={assigning || !assignEmail.trim()}>
+              {assigning ? 'Assigning...' : 'Assign Manager'}
             </Button>
           </DialogFooter>
         </DialogContent>

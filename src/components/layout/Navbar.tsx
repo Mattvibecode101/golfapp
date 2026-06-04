@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Flag, Search, Menu, X, LogOut, LayoutDashboard, Shield } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useAdmin } from '@/hooks/useAdmin'
+import { useClubManager } from '@/hooks/useClubManager'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -17,6 +18,7 @@ import {
 export function Navbar() {
   const { user, signOut } = useAuth()
   const { isAdmin } = useAdmin()
+  const { isClubManager } = useClubManager()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -77,6 +79,12 @@ export function Navbar() {
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   My Bookings
                 </DropdownMenuItem>
+                {isClubManager && (
+                  <DropdownMenuItem onClick={() => navigate('/club')}>
+                    <Flag className="mr-2 h-4 w-4 text-primary" />
+                    Club Portal
+                  </DropdownMenuItem>
+                )}
                 {isAdmin && (
                   <DropdownMenuItem onClick={() => navigate('/admin')}>
                     <Shield className="mr-2 h-4 w-4 text-primary" />
